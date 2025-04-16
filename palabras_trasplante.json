@@ -1,0 +1,83 @@
+{
+  "A": [
+    {"word": "Antiséptico", "definition": "Tipo de producto usado para el cuidado bucal después del cepillado"},
+    {"word": "Advagraf", "definition": "Medicamento inmunosupresor que se toma una vez al día"},
+    {"word": "Analgésico", "definition": "Medicamento para calmar el dolor, como el paracetamol"}
+  ],
+  "B": [
+    {"word": "Biopsia", "definition": "Procedimiento médico para detectar rechazo en el órgano trasplantado"},
+    {"word": "Bicarbonato", "definition": "Ingrediente usado en una bebida para reponer sales minerales en caso de diarrea"}
+  ],
+  "C": [
+    {"word": "Ciclosporina", "definition": "Medicamento inmunosupresor que se presenta en cápsulas de diferentes colores"},
+    {"word": "Colesterol", "definition": "Sustancia que se debe controlar en la dieta post-trasplante"}
+  ],
+  "D": [
+    {"word": "Dieta", "definition": "Régimen alimenticio que debe seguirse para evitar el aumento de peso y disminuir factores de riesgo"},
+    {"word": "Diarrea", "definition": "Condición que requiere una dieta específica y reposición de líquidos"}
+  ],
+  "E": [
+    {"word": "Estatinas", "definition": "Medicamentos indicados para reducir niveles elevados de colesterol"},
+    {"word": "Esternón", "definition": "Hueso que necesita un periodo de recuperación después del trasplante"}
+  ],
+  "F": [
+    {"word": "Fiebre", "definition": "Síntoma de alerta que debe ser controlado y comunicado al médico si persiste"},
+    {"word": "Farmacia", "definition": "Lugar donde se recogen los medicamentos inmunosupresores tras el alta"}
+  ],
+  "G": [
+    {"word": "Gripe", "definition": "Enfermedad viral contra la que se recomienda vacunarse anualmente"},
+    {"word": "Grasas", "definition": "Tipo de nutrientes que deben limitarse en la dieta post-trasplante"}
+  ],
+  "H": [
+    {"word": "Higiene", "definition": "Conjunto de prácticas fundamentales para prevenir infecciones en pacientes trasplantados"},
+    {"word": "Hipertensión", "definition": "Condición que debe controlarse después del trasplante"}
+  ],
+  "I": [
+    {"word": "Inmunosupresores", "definition": "Medicamentos esenciales para prevenir el rechazo del órgano trasplantado"},
+    {"word": "Infección", "definition": "Complicación que se debe prevenir con medidas higiénicas y medicamentos"}
+  ],
+  "J": [
+    {"word": "Jabón", "definition": "Producto esencial para el lavado frecuente de manos"},
+    {"word": "Jugo", "definition": "Líquido de frutas que debe evitarse si es de pomelo"}
+  ],
+  "L": [
+    {"word": "Legumbres", "definition": "Alimentos ricos en fibra recomendados para prevenir el estreñimiento"},
+    {"word": "Lavado", "definition": "Acción frecuente recomendada para las manos"}
+  ],
+  "M": [
+    {"word": "Mascarilla", "definition": "Elemento de protección recomendado en lugares concurridos durante los primeros meses"},
+    {"word": "Micofenolato", "definition": "Medicamento inmunosupresor que se toma dos veces al día"}
+  ],
+  "N": [
+    {"word": "Nistatina", "definition": "Medicamento antifúngico utilizado para prevenir infecciones locales"},
+    {"word": "Nutrición", "definition": "Aspecto importante a cuidar después del trasplante"}
+  ],
+  "O": [
+    {"word": "Omeprazol", "definition": "Medicamento que se toma por la mañana durante el primer mes de trasplante"},
+    {"word": "Osteoporosis", "definition": "Condición que se previene con una dieta rica en calcio"}
+  ],
+  "P": [
+    {"word": "Prograf", "definition": "Nombre comercial de un medicamento inmunosupresor que contiene tacrolimus"},
+    {"word": "Peso", "definition": "Factor que debe controlarse para evitar complicaciones post-trasplante"}
+  ],
+  "R": [
+    {"word": "Rechazo", "definition": "Complicación que puede ocurrir en cualquier momento y requiere revisiones periódicas"},
+    {"word": "Reposo", "definition": "Estado recomendado después de las comidas para evitar fatiga"}
+  ],
+  "S": [
+    {"word": "Sol", "definition": "Elemento al que la piel es más sensible después del trasplante, requiriendo protección"},
+    {"word": "Sandimmun", "definition": "Medicamento inmunosupresor que contiene ciclosporina"}
+  ],
+  "T": [
+    {"word": "Tacrolimus", "definition": "Inmunosupresor que debe tomarse con el estómago vacío"},
+    {"word": "Temperatura", "definition": "Medida corporal que debe controlarse regularmente después del trasplante"}
+  ],
+  "V": [
+    {"word": "Vacuna", "definition": "Medida preventiva recomendada contra la gripe y otras enfermedades"},
+    {"word": "Vitaminas", "definition": "Suplementos que pueden ser necesarios después del trasplante"}
+  ],
+  "Z": [
+    {"word": "Zumo", "definition": "Bebida de frutas que debe evitarse si es de pomelo debido a interacciones con medicamentos"},
+    {"word": "Zoster", "definition": "Infección viral que puede prevenirse con vacunación en pacientes trasplantados"}
+  ]
+}
