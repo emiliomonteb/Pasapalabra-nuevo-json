@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FarmaPalabra: Trasplante</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --bg-color: #ecf0f1;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+        
+		.game-container {
+		    text-align: center;
+		    max-width: 900px;
+		    width: 100%;
+		    padding: 30px;
+		    box-sizing: border-box;
+		    background-color: var(--card-bg);
+		    border-radius: 15px;
+		    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+		    margin: 0 auto;
+		    overflow-x: hidden;
+		}        
+        header {
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--accent-color);
+            font-style: italic;
+            margin-top: 0;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        #timer {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+        
+        #score {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(44, 62, 80, 0.1);
+            margin: 20px 0;
+        }
+        
+        .score-value {
+            font-weight: 700;
+            padding: 0 5px;
+        }
+        
+        .correct-score {
+            color: var(--correct-color);
+        }
+        
+        .incorrect-score {
+            color: var(--incorrect-color);
+        }
+        
+        .rosco-container {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            margin: 0 auto 30px;
+            left: 0; /* Asegura que no haya desplazamiento lateral */
+            transform: translateX(0); /* Resetea cualquier transformación */
+        }
+        
+        .rosco {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            left: 0; /* Asegura que no haya desplazamiento */
+            margin: 0 auto; /* Centro horizontal */
+        }
+        
+        .current-letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: 700;
+            color: var(--accent-color);
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+		.center-image {
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		    width: 100px;
+		    height: 100px;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    z-index: 0;
+		    border-radius: 50%;
+		    background-color: rgba(255, 255, 255, 0.8);
+		    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		#centerLogo {
+		    max-width: 100%;
+		    max-height: 100%;
+		    object-fit: contain;
+		}
+
+		.letter {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        
+        .correct { 
+            background-color: var(--correct-color); 
+            color: white; 
+            transform: scale(1.1);
+        }
+        
+        .incorrect { 
+            background-color: var(--incorrect-color); 
+            color: white;
+            transform: scale(0.9);
+        }
+        
+        .current { 
+            background-color: var(--accent-color); 
+            color: white; 
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+        
+        .game-info {
+            background-color: rgba(236, 240, 241, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        #definition {
+            font-size: 18px;
+            font-style: italic;
+            color: var(--primary-color);
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .input-container {
+            margin: 20px 0;
+        }
+        
+        input {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            width: 300px;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            outline: none;
+        }
+        
+        input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button.primary {
+            background-color: var(--accent-color);
+        }
+        
+        button.success {
+            background-color: var(--correct-color);
+        }
+        
+        button.danger {
+            background-color: var(--incorrect-color);
+        }
+        
+        #finalScore {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 30px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(44, 62, 80, 0.1);
+            color: var(--primary-color);
+            animation: fadeIn 1s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        #viewResults {
+            margin-top: 20px;
+        }
+        
+        #results {
+            text-align: left;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: rgba(236, 240, 241, 0.5);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        #results h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            border-left: 5px solid var(--correct-color);
+        }
+        
+        .result-incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 5px solid var(--incorrect-color);
+        }
+        
+        /* Animaciones */
+        .animate-pulse {
+            animation: pulse-animation 2s infinite;
+        }
+        
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    h2 {
+        font-size: 16px;
+    }
+    
+    .rosco-container {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .letter {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .current-letter {
+        font-size: 60px;
+    }
+    
+    input {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .btn-container {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    #timer {
+        font-size: 22px;
+        padding: 8px 16px;
+    }
+    
+    #definition {
+        font-size: 16px;
+    }
+	.center-image {
+	    width: 80px;
+	    height: 80px;
+	}
+	}
+
+/* Para dispositivos muy pequeños */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 20px;
+    }
+    
+    .rosco-container {
+        width: 260px;	        
+        height: 260px;
+   	}
+    
+   	.letter {
+   	    width: 30px;
+   	    height: 30px;
+        font-size: 14px;
+    }
+    
+    .current-letter {
+        font-size: 50px;
+    }
+    
+    #timer {
+        font-size: 20px;
+    }
+    
+    .game-info {
+        padding: 15px 10px;
+    }
+    
+    #definition {
+        font-size: 14px;
+    }
+	.center-image {
+	    width: 60px;
+	    height: 60px;
+	}
+}        
+        /* Estilos para impresión */
+        /* Estilos para el informe de resultados mejorado */
+        .results-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .results-header h2 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .results-header .subtitle {
+            color: var(--accent-color);
+            font-style: italic;
+        }
+        
+        .results-summary {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            min-width: 120px;
+        }
+        
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .summary-value.correct {
+            color: var(--correct-color);
+        }
+        
+        .summary-value.incorrect {
+            color: var(--incorrect-color);
+        }
+        
+        .summary-value.neutral {
+            color: var(--accent-color);
+        }
+        
+        .results-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title.correct {
+            color: var(--correct-color);
+        }
+        
+        .section-title.incorrect {
+            color: var(--incorrect-color);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .result-card {
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .result-card.correct {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--correct-color);
+        }
+        
+        .result-card.incorrect {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--incorrect-color);
+        }
+        
+        .result-letter {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        .result-word {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .result-definition {
+            margin-bottom: 12px;
+            line-height: 1.4;
+            color: #555;
+        }
+        
+        .result-answer {
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+        
+        .result-answer.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+        }
+        
+        .result-answer.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+        
+        .result-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .results-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        /* Responsive para el informe */
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-item {
+                flex-basis: 100%;
+                margin-bottom: 15px;
+            }
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            #results, #results * {
+                visibility: visible;
+            }
+            
+            #results {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: none;
+                box-shadow: none;
+            }
+            
+            .result-item {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Estilo para la pantalla de carga */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de carga -->
+    <div class="loading-container" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Cargando FarmaPalabra...</div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <h1>FarmaPalabra Trasplante</h1>
+            <h2>Servicio de Farmacia. Hospital U.P. La Fe</h2>
+        </header>
+        
+        <div class="game-stats">
+            <div id="timer">05:00</div>
+        </div>
+        
+        <div class="rosco-container">
+            <div class="current-letter" id="currentLetterDisplay">A</div>
+            <div class="center-image"><img src="Logo-La-Fe.jpg" alt="Logo" id="centerLogo"></div>
+            <div class="rosco" id="rosco"></div>
+        </div>
+        
+        <div class="game-info">
+            <p id="definition"></p>
+        </div>
+        
+        <div id="score">
+            <span>Correctas: <span id="correctCount" class="score-value correct-score">0</span></span> | 
+            <span>Incorrectas: <span id="incorrectCount" class="score-value incorrect-score">0</span></span>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="answer" placeholder="Tu respuesta" autocomplete="off">
+        </div>
+        
+        <div class="btn-container">
+            <button class="primary" onclick="checkAnswer()">Responder</button>
+            <button onclick="pasapalabra()">Pasapalabra</button>
+            <button class="success" onclick="newRosco()">Nuevo rosco</button>
+        </div>
+        
+        <div id="finalScore"></div>
+        <button id="viewResults" class="primary" style="display: none;" onclick="showResults()">Ver resultados</button>
+        <div id="results"></div>
+    </div>
+
+    <!-- Añadir librería para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        // Variable para almacenar las palabras cargadas desde el JSON
+        let allWords = {};
+        let words = [];
+        let currentIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let remainingWords = [];
+        let answeredWords = [];
+        let userAnswers = {};
+        let timerInterval;
+        let timeLeft = 300; // 5 minutes in seconds
+        let hintsUsed = 0;
+        const maxHints = 3;
+        let wordsLoaded = false;
+
+        // Función para cargar el archivo JSON
+        async function loadWords() {
+            try {
+                const response = await fetch('palabras_trasplante.json');
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el archivo de palabras');
+                }
+                allWords = await response.json();
+                wordsLoaded = true;
+                console.log('Palabras cargadas correctamente');
+                
+                // Una vez cargadas las palabras, ocultamos la pantalla de carga e iniciamos el juego
+                document.getElementById('loadingScreen').style.display = 'none';
+                initGame();
+            } catch (error) {
+                console.error('Error al cargar las palabras:', error);
+                alert('Error al cargar las palabras del juego. Por favor, recarga la página.');
+            }
+        }
+
+        function selectRandomWords() {
+            words = [];
+            for (let letter in allWords) {
+                const randomIndex = Math.floor(Math.random() * allWords[letter].length);
+                words.push({letter: letter, ...allWords[letter][randomIndex]});
+            }
+        }
+
+        function initGame() {
+            selectRandomWords();
+            currentIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            hintsUsed = 0;
+            remainingWords = [...words];
+            answeredWords = new Array(words.length).fill(null);
+            userAnswers = {};
+            timeLeft = 300;
+
+            // Ordenar palabras alfabéticamente
+            remainingWords.sort((a, b) => a.letter.localeCompare(b.letter));
+
+			const rosco = document.getElementById('rosco');
+			rosco.innerHTML = '';
+			words.forEach((word, index) => {
+			    const letterDiv = document.createElement('div');
+			    letterDiv.className = 'letter';
+			    letterDiv.textContent = word.letter;
+			    const angle = (index / words.length) * 2 * Math.PI;
+    
+			    // Obtener el tamaño actual del contenedor del rosco
+			    const roscoContainer = document.querySelector('.rosco-container');
+			    const containerWidth = roscoContainer.offsetWidth;
+			    const radius = containerWidth * 0.44; // 44% del ancho del contenedor
+			    const centerX = containerWidth / 2;
+			    const centerY = containerWidth / 2;
+    
+			    const x = Math.cos(angle) * radius + centerX;
+			    const y = Math.sin(angle) * radius + centerY;
+			    letterDiv.style.left = `${x}px`;
+			    letterDiv.style.top = `${y}px`;
+			    rosco.appendChild(letterDiv);
+			});
+
+			document.getElementById('answer').disabled = false;
+            document.querySelector('button[onclick="checkAnswer()"]').disabled = false;
+            document.querySelector('button[onclick="pasapalabra()"]').disabled = false;
+            document.getElementById('finalScore').textContent = '';
+            document.getElementById('viewResults').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+
+            // Añadir event listener para enviar respuesta con Enter
+            document.getElementById('answer').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+
+            updateGame();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+            // Añadir animación de urgencia cuando queda poco tiempo
+            if (timeLeft <= 60) { // último minuto
+                document.getElementById('timer').style.color = '#e74c3c';
+                document.getElementById('timer').classList.add('animate-pulse');
+            } else {
+                document.getElementById('timer').style.color = '';
+                document.getElementById('timer').classList.remove('animate-pulse');
+            }
+        }
+
+        function updateGame() {
+            const letters = document.querySelectorAll('.letter');
+            letters.forEach((letter, index) => {
+                letter.classList.remove('current');
+                if (words[index] === remainingWords[currentIndex]) {
+                    letter.classList.add('current');
+                }
+            });
+            
+            if (remainingWords.length > 0) {
+                const currentWord = remainingWords[currentIndex];
+                document.getElementById('definition').textContent = currentWord.definition;
+                // Actualizar la letra grande en el centro
+                document.getElementById('currentLetterDisplay').textContent = currentWord.letter;
+            } else {
+                document.getElementById('definition').textContent = "¡Has completado todas las palabras!";
+                document.getElementById('currentLetterDisplay').textContent = "";
+            }
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus(); // Enfocar el input automáticamente
+            
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('incorrectCount').textContent = incorrectAnswers;
+        }
+
+        function checkAnswer() {
+            if (remainingWords.length === 0) {
+                endGame();
+                return;
+            }
+
+            // Eliminar pista si existe
+            const currentHint = document.getElementById('current-hint');
+            if (currentHint) {
+                currentHint.remove();
+            }
+
+            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            const correctAnswer = remainingWords[currentIndex].word.toLowerCase();
+            const letters = document.querySelectorAll('.letter');
+            const currentLetter = words.findIndex(word => word.letter === remainingWords[currentIndex].letter);
+
+            userAnswers[remainingWords[currentIndex].letter] = userAnswer;
+
+            if (userAnswer === correctAnswer) {
+                // Efecto de sonido de respuesta correcta
+                playSound('correct');
+                
+                letters[currentLetter].classList.remove('current');
+                letters[currentLetter].classList.add('correct');
+                correctAnswers++;
+                answeredWords[currentLetter] = true;
+            } else {
+                // Efecto de sonido de respuesta incorrecta
+                playSound('incorrect');
+                
+                letters[currentLetter].classList.remove('current');
+                letters[currentLetter].classList.add('incorrect');
+                incorrectAnswers++;
+                answeredWords[currentLetter] = false;
+            }
+
+            remainingWords.splice(currentIndex, 1);
+
+            if (remainingWords.length === 0) {
+                endGame();
+            } else {
+                if (currentIndex >= remainingWords.length) {
+                    currentIndex = 0;
+                }
+                updateGame();
+            }
+        }
+
+        function pasapalabra() {
+            if (remainingWords.length > 1) {
+                playSound('pasapalabra');
+                
+                // Eliminar pista si existe
+                const currentHint = document.getElementById('current-hint');
+                if (currentHint) {
+                    currentHint.remove();
+                }
+                
+                currentIndex = (currentIndex + 1) % remainingWords.length;
+                updateGame();
+            } else if (remainingWords.length === 1) {
+                alert("Solo queda una palabra. Debes responderla.");
+            } else {
+                endGame();
+            }
+        }
+        
+        function showHint() {
+            if (hintsUsed < maxHints && remainingWords.length > 0) {
+                const currentWord = remainingWords[currentIndex].word;
+                const firstLetter = currentWord.charAt(0);
+                const hint = `La palabra comienza con "${firstLetter}" y tiene ${currentWord.length} letras`;
+                
+                // Eliminar pista anterior si existe
+                const existingHint = document.getElementById('current-hint');
+                if (existingHint) {
+                    existingHint.remove();
+                }
+                
+                // Mostrar pista con animación
+                const hintElement = document.createElement('div');
+                hintElement.id = 'current-hint';
+                hintElement.textContent = hint;
+                hintElement.style.position = 'absolute';
+                hintElement.style.top = '50%';
+                hintElement.style.left = '50%';
+                hintElement.style.transform = 'translate(-50%, -50%)';
+                hintElement.style.backgroundColor = 'rgba(52, 152, 219, 0.9)';
+                hintElement.style.color = 'white';
+                hintElement.style.padding = '15px 25px';
+                hintElement.style.borderRadius = '10px';
+                hintElement.style.fontSize = '18px';
+                hintElement.style.fontWeight = 'bold';
+                hintElement.style.zIndex = '1000';
+                hintElement.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+                hintElement.style.animation = 'fadeIn 0.3s ease-out';
+                
+                // Añadir a la rosco-container en lugar de body para mejor control
+                document.querySelector('.rosco-container').appendChild(hintElement);
+                
+                hintsUsed++;
+                
+                // Actualizar contador de pistas
+                const hintsLeftElement = document.querySelector('.hints-left');
+                if (hintsLeftElement) {
+                    hintsLeftElement.textContent = maxHints - hintsUsed;
+                }
+            } else if (hintsUsed >= maxHints) {
+                alert("Has agotado todas tus pistas disponibles.");
+            }
+        }
+        
+        function showFeedback(isCorrect, correctAnswer = '') {
+            // Función vacía - retroalimentación visual eliminada según lo solicitado
+        }
+        
+        function playSound(type) {
+            // Esta función es un placeholder para efectos de sonido
+            // Si decides implementarlos, aquí puedes añadir la lógica
+            // Por ahora está desactivada para evitar problemas de permisos
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            const letters = document.querySelectorAll('.letter');
+            letters.forEach((letter, index) => {
+                if (answeredWords[index] === null) {
+                    letter.classList.remove('current');
+                    letter.classList.add('incorrect');
+                    incorrectAnswers++;
+                    userAnswers[words[index].letter] = "";
+                }
+            });
+
+            const finalScore = document.getElementById('finalScore');
+            finalScore.innerHTML = `
+                <h3>¡Juego terminado!</h3>
+                <p>Tu puntuación final:</p>
+                <p><span class="score-value correct-score">${correctAnswers}</span> correctas | 
+                <span class="score-value incorrect-score">${incorrectAnswers}</span> incorrectas</p>
+                <p>Tiempo restante: ${formatTime(timeLeft)}</p>
+            `;
+            
+            document.getElementById('answer').disabled = true;
+            document.querySelector('button[onclick="checkAnswer()"]').disabled = true;
+            document.querySelector('button[onclick="pasapalabra()"]').disabled = true;
+            document.getElementById('viewResults').style.display = 'inline-block';
+            
+            // Efecto de confeti para el final del juego
+            if (correctAnswers > incorrectAnswers) {
+                showConfetti();
+            }
+        }
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function showConfetti() {
+            // Esta función es un placeholder para el efecto de confeti
+            // Si se implementa, aquí iría la lógica visual
+        }
+
+        function newRosco() {
+            initGame();
+        }
+
+        function showResults() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Resultados del FarmaPalabra: Trasplante</h2>';
+            resultsDiv.style.display = 'block';
+
+            // Agrupar palabras por estado (correctas e incorrectas)
+            const correctWords = [];
+            const incorrectWords = [];
+            
+            words.forEach(word => {
+                const userAnswer = userAnswers[word.letter] || "No contestada";
+                const isCorrect = userAnswer.toLowerCase() === word.word.toLowerCase();
+                
+                if (isCorrect) {
+                    correctWords.push(word);
+                } else {
+                    incorrectWords.push(word);
+                }
+            });
+            
+            // Añadir resumen
+            const summaryDiv = document.createElement('div');
+            summaryDiv.innerHTML = `
+                <div style="background-color: rgba(44, 62, 80, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3>Resumen de resultados</h3>
+                    <p><strong>Aciertos:</strong> ${correctAnswers} de ${words.length} (${Math.round(correctAnswers/words.length*100)}%)</p>
+                    <p><strong>Tiempo utilizado:</strong> ${formatTime(300 - timeLeft)}</p>
+                </div>
+            `;
+            resultsDiv.appendChild(summaryDiv);
+            
+            // Mostrar palabras correctas
+            if (correctWords.length > 0) {
+                const correctTitle = document.createElement('h3');
+                correctTitle.textContent = 'Respuestas correctas';
+                correctTitle.style.color = 'var(--correct-color)';
+                resultsDiv.appendChild(correctTitle);
+                
+                correctWords.forEach(word => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item result-correct';
+                    
+                    let resultHTML = `<strong>${word.letter}: ${word.definition}</strong><br>`;
+                    resultHTML += `Tu respuesta: ${word.word}`;
+                    
+                    resultItem.innerHTML = resultHTML;
+                    resultsDiv.appendChild(resultItem);
+                });
+            }
+            
+            // Mostrar palabras incorrectas
+            if (incorrectWords.length > 0) {
+                const incorrectTitle = document.createElement('h3');
+                incorrectTitle.textContent = 'Respuestas incorrectas';
+                incorrectTitle.style.color = 'var(--incorrect-color)';
+                incorrectTitle.style.marginTop = '20px';
+                resultsDiv.appendChild(incorrectTitle);
+                
+                incorrectWords.forEach(word => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item result-incorrect';
+                    
+                    const userAnswer = userAnswers[word.letter] || "No contestada";
+                    
+                    let resultHTML = `<strong>${word.letter}: ${word.definition}</strong><br>`;
+                    resultHTML += `Tu respuesta: ${userAnswer}<br>`;
+                    resultHTML += `Respuesta correcta: <strong>${word.word}</strong>`;
+                    
+                    resultItem.innerHTML = resultHTML;
+                    resultsDiv.appendChild(resultItem);
+                });
+            }
+
+            // Añadir botones de acción
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.style.textAlign = 'center';
+            buttonsDiv.style.marginTop = '30px';
+            
+            const pdfButton = document.createElement('button');
+            pdfButton.textContent = 'Descargar PDF';
+            pdfButton.onclick = generatePDF;
+            pdfButton.className = 'primary';
+            
+            const newGameButton = document.createElement('button');
+            newGameButton.textContent = 'Nuevo juego';
+            newGameButton.onclick = newRosco;
+            newGameButton.className = 'success';
+            newGameButton.style.marginLeft = '15px';
+            
+            buttonsDiv.appendChild(pdfButton);
+            buttonsDiv.appendChild(newGameButton);
+            resultsDiv.appendChild(buttonsDiv);
+        }
+
+        function generatePDF() {
+            // Usar jsPDF directamente sin html2canvas
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            
+            // Configuración de estilo
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(18);
+            pdf.setTextColor(44, 62, 80); // Color primario
+            
+            // Título
+            pdf.text("Resultados del FarmaPalabra: Trasplante", 105, 15, { align: "center" });
+            
+            pdf.setFont("helvetica", "italic");
+            pdf.setFontSize(12);
+            pdf.setTextColor(52, 152, 219); // Color acento
+            pdf.text("Servicio de Farmacia. Hospital U.P. La Fe", 105, 22, { align: "center" });
+            
+            // Línea divisoria
+            pdf.setDrawColor(220, 220, 220);
+            pdf.line(20, 25, 190, 25);
+            
+            // Resumen de resultados
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(14);
+            pdf.setTextColor(44, 62, 80);
+            pdf.text("Resumen de resultados", 20, 35);
+            
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(12);
+            pdf.text(`Aciertos: ${correctAnswers} de ${words.length} (${Math.round(correctAnswers/words.length*100)}%)`, 20, 45);
+            pdf.text(`Errores: ${incorrectAnswers}`, 20, 52);
+            pdf.text(`Tiempo utilizado: ${formatTime(300 - timeLeft)}`, 20, 59);
+            
+            // Línea divisoria
+            pdf.line(20, 65, 190, 65);
+            
+            // Respuestas correctas
+            let yPos = 75;
+            
+            // Agrupar palabras por estado
+            const correctWords = [];
+            const incorrectWords = [];
+            
+            words.forEach(word => {
+                const userAnswer = userAnswers[word.letter] || "No contestada";
+                const isCorrect = userAnswer.toLowerCase() === word.word.toLowerCase();
+                
+                if (isCorrect) {
+                    correctWords.push({...word, userAnswer});
+                } else {
+                    incorrectWords.push({...word, userAnswer});
+                }
+            });
+            
+            // Respuestas correctas
+            if (correctWords.length > 0) {
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(14);
+                pdf.setTextColor(46, 204, 113); // Color correcto
+                pdf.text(`Respuestas correctas (${correctWords.length})`, 20, yPos);
+                yPos += 10;
+                
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(11);
+                pdf.setTextColor(0, 0, 0);
+                
+                correctWords.forEach(word => {
+                    // Verificar si necesitamos una nueva página
+                    if (yPos > 270) {
+                        pdf.addPage();
+                        yPos = 20;
+                    }
+                    
+                    pdf.setFont("helvetica", "bold");
+                    pdf.text(`${word.letter}: ${word.word}`, 20, yPos);
+                    
+                    pdf.setFont("helvetica", "normal");
+                    
+                    // Dividir la definición en líneas si es muy larga
+                    const definition = `Definición: ${word.definition}`;
+                    const definitionLines = pdf.splitTextToSize(definition, 170);
+                    pdf.text(definitionLines, 20, yPos + 7);
+                    
+                    pdf.text(`Tu respuesta: ${word.userAnswer}`, 20, yPos + 7 + (definitionLines.length * 6));
+                    
+                    // Línea separadora entre palabras
+                    pdf.setDrawColor(240, 240, 240);
+                    pdf.line(20, yPos + 12 + (definitionLines.length * 6), 190, yPos + 12 + (definitionLines.length * 6));
+                    
+                    yPos += 20 + (definitionLines.length * 6);
+                });
+            }
+            
+            // Respuestas incorrectas
+            if (incorrectWords.length > 0) {
+                // Verificar si necesitamos una nueva página
+                if (yPos > 250) {
+                    pdf.addPage();
+                    yPos = 20;
+                }
+                
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(14);
+                pdf.setTextColor(231, 76, 60); // Color incorrecto
+                pdf.text(`Respuestas incorrectas (${incorrectWords.length})`, 20, yPos);
+                yPos += 10;
+                
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(11);
+                pdf.setTextColor(0, 0, 0);
+                
+                incorrectWords.forEach(word => {
+                    // Verificar si necesitamos una nueva página
+                    if (yPos > 270) {
+                        pdf.addPage();
+                        yPos = 20;
+                    }
+                    
+                    pdf.setFont("helvetica", "bold");
+                    pdf.text(`${word.letter}: ${word.word}`, 20, yPos);
+                    
+                    pdf.setFont("helvetica", "normal");
+                    
+                    // Dividir la definición en líneas si es muy larga
+                    const definition = `Definición: ${word.definition}`;
+                    const definitionLines = pdf.splitTextToSize(definition, 170);
+                    pdf.text(definitionLines, 20, yPos + 7);
+                    
+                    let extraYPos = yPos + 7 + (definitionLines.length * 6);
+                    
+                    pdf.text(`Tu respuesta: ${word.userAnswer}`, 20, extraYPos);
+                    pdf.text(`Respuesta correcta: ${word.word}`, 20, extraYPos + 7);
+                    
+                    // Línea separadora entre palabras
+                    pdf.setDrawColor(240, 240, 240);
+                    pdf.line(20, extraYPos + 14, 190, extraYPos + 14);
+                    
+                    yPos += 28 + (definitionLines.length * 6);
+                });
+            }
+            
+            // Pie de página
+            let lastPage = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= lastPage; i++) {
+                pdf.setPage(i);
+                pdf.setFont("helvetica", "italic");
+                pdf.setFontSize(8);
+                pdf.setTextColor(150, 150, 150);
+                pdf.text(`FarmaPalabra Trasplante - Página ${i} de ${lastPage}`, 105, 290, { align: "center" });
+            }
+            
+            // Guardar el PDF
+            pdf.save('Resultados_FarmaPalabra_Trasplante.pdf');
+        }
+        
+        // Añadir botón de pistas
+        function addHintButton() {
+            const btnContainer = document.querySelector('.btn-container');
+            
+            if (!document.getElementById('hintButton')) {
+                const hintButton = document.createElement('button');
+                hintButton.id = 'hintButton';
+                hintButton.className = 'danger';
+                hintButton.innerHTML = `Pista <span class="hints-left">${maxHints}</span>`;
+                hintButton.onclick = showHint;
+                
+                btnContainer.appendChild(hintButton);
+            }
+        }
+        
+        // Añadir sonidos y animaciones adicionales
+        function setupSoundEffects() {
+            // Esta función es un placeholder para inicializar efectos de sonido
+            // Funcionaría si decides implementarlos completamente
+        }
+        
+        // Función para recalcular la posición de las letras cuando se redimensiona la ventana
+		function recalculateRoscoPositions() {
+            const letters = document.querySelectorAll('.letter');
+            if (letters.length === 0) return;
+
+            const roscoContainer = document.querySelector('.rosco-container');
+            const containerWidth = roscoContainer.offsetWidth;
+            const containerHeight = roscoContainer.offsetHeight; // Usar altura también
+            const radius = Math.min(containerWidth, containerHeight) * 0.44;
+            const centerX = containerWidth / 2;
+            const centerY = containerHeight / 2;
+
+            letters.forEach((letter, index) => {
+                const angle = (index / letters.length) * 2 * Math.PI;
+                const x = Math.cos(angle) * radius + centerX;
+                const y = Math.sin(angle) * radius + centerY;
+                letter.style.left = `${x - letter.offsetWidth/2}px`; // Ajuste para el tamaño del elemento
+                letter.style.top = `${y - letter.offsetHeight/2}px`;
+            });
+        }
+        
+        // Iniciar el juego
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar palabras desde el JSON
+            loadWords();
+            
+            // Configurar elementos adicionales después de cargar el JSON
+            addHintButton();
+            setupSoundEffects();
+            
+		    // Asegurar que el rosco se dibuje correctamente tras la carga completa
+	        window.addEventListener('load', recalculateRoscoPositions);
+
+		    // Añadir modo oscuro/claro
+            const container = document.querySelector('.game-container');
+            const themeToggle = document.createElement('button');
+            themeToggle.textContent = '🌙';
+            themeToggle.style.position = 'absolute';
+            themeToggle.style.top = '20px';
+            themeToggle.style.right = '20px';
+            themeToggle.style.fontSize = '18px';
+            themeToggle.style.width = '40px';
+            themeToggle.style.height = '40px';
+            themeToggle.style.borderRadius = '50%';
+            themeToggle.style.border = 'none';
+            themeToggle.style.background = 'rgba(52, 152, 219, 0.2)';
+            themeToggle.style.cursor = 'pointer';
+            
+            let darkMode = false;
+            
+            themeToggle.addEventListener('click', function() {
+                if (darkMode) {
+                    // Cambiar a modo claro
+                    document.documentElement.style.setProperty('--primary-color', '#2c3e50');
+                    document.documentElement.style.setProperty('--accent-color', '#3498db');
+                    document.documentElement.style.setProperty('--bg-color', '#ecf0f1');
+                    document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                    document.documentElement.style.setProperty('--text-color', '#333333');
+                    themeToggle.textContent = '🌙';
+                } else {
+                    // Cambiar a modo oscuro
+                    document.documentElement.style.setProperty('--primary-color', '#ecf0f1');
+                    document.documentElement.style.setProperty('--accent-color', '#3498db');
+                    document.documentElement.style.setProperty('--bg-color', '#2c3e50');
+                    document.documentElement.style.setProperty('--card-bg', '#34495e');
+                    document.documentElement.style.setProperty('--text-color', '#ecf0f1');
+                    themeToggle.textContent = '☀️';
+                }
+                darkMode = !darkMode;
+            });
+            
+            container.appendChild(themeToggle);
+        });
+
+		// Agregar listener para redimensionamiento
+		window.addEventListener('resize', recalculateRoscoPositions);
+    </script>
+</body>
+</html>
